@@ -26,6 +26,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn, SIDEBAR_RAIL_HIDDEN_LABEL } from "../lib/utils";
 import { ThemeToggle } from "./ThemeToggle";
 import { SidebarServerInfo } from "./SidebarServerInfo";
+import { useTranslation } from "@/i18n";
+import { LocaleSwitcher } from "./LocaleSwitcher";
 
 const INVITES_PATH = "/company/settings/members?tab=invites";
 const DOCS_URL = "https://docs.paperclip.ing/";
@@ -119,6 +121,7 @@ export function SidebarAccountMenu({
   onOpenChange,
   forceExpanded = false,
 }: SidebarAccountMenuProps) {
+  const { t } = useTranslation();
   const cloud = useCloudInstance();
   const isCloud = Boolean(cloud);
   // Invites live on the Members page (or in Cloud's People settings). Hide the
@@ -155,7 +158,7 @@ export function SidebarAccountMenu({
 
   const displayName = session?.user.name?.trim() || "Board";
   const secondaryLabel =
-    session?.user.email?.trim() || (deploymentMode === "authenticated" ? "Signed in" : "Local workspace board");
+    session?.user.email?.trim() || (deploymentMode === "authenticated" ? t("accountMenu.signedIn") : t("accountMenu.localWorkspaceBoard"));
   const initials = deriveInitials(displayName);
   const profileHref = userProfilePath(session?.user);
 
@@ -179,7 +182,7 @@ export function SidebarAccountMenu({
                 "flex min-w-0 items-center gap-2.5 rounded-lg text-left text-(length:--text-compact) font-medium text-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 rail ? "w-full px-3 py-2" : "flex-1 px-2 py-1.5",
               )}
-              aria-label="Open account menu"
+              aria-label={t("accountMenu.openAccountMenu")}
             >
               <Avatar size="sm">
                 {session?.user.image ? <AvatarImage src={session.user.image} alt={displayName} /> : null}
@@ -198,7 +201,7 @@ export function SidebarAccountMenu({
             <div className="relative flex h-(--profile-popover-header-height) shrink-0 items-center gap-2.5 px-3.5">
               <Link
                 to={profileHref}
-                aria-label="View profile"
+                aria-label={t("accountMenu.viewProfile")}
                 onClick={closeNavigationChrome}
                 className="absolute inset-0 transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
               />
@@ -219,7 +222,7 @@ export function SidebarAccountMenu({
                     href={`https://github.com/paperclipai/paperclip/commit/${stagingCommit}`}
                     target="_blank"
                     rel="noreferrer"
-                    aria-label={`View commit ${stagingCommit} on GitHub`}
+                    aria-label={t("accountMenu.viewCommit", { commit: stagingCommit })}
                     title={stagingCommit}
                   >
                     SHA {stagingCommit.slice(0, 7)}
@@ -230,14 +233,14 @@ export function SidebarAccountMenu({
 
             <div className="flex flex-1 flex-col gap-0.5 border-t border-border px-2.5 pb-2.5 pt-2">
               <MenuAction
-                label="Settings"
+                label={t("accountMenu.settings")}
                 icon={Settings}
                 href="/company/settings"
                 onClick={closeNavigationChrome}
               />
               {showInvite && inviteHref ? (
                 <MenuAction
-                  label="Invite"
+                  label={t("accountMenu.invite")}
                   icon={UserPlus}
                   href={inviteHref}
                   topLevel={isCloud}
@@ -245,13 +248,14 @@ export function SidebarAccountMenu({
                 />
               ) : null}
               <MenuAction
-                label="Documentation"
+                label={t("accountMenu.documentation")}
                 icon={BookOpen}
                 href={DOCS_URL}
                 external
                 onClick={() => setOpen(false)}
               />
               <ThemeToggle variant="compact-menu-action" onAfterToggle={() => setOpen(false)} />
+              <LocaleSwitcher />
               {deploymentMode === "authenticated" ? (
                 <button
                   type="button"
@@ -266,7 +270,7 @@ export function SidebarAccountMenu({
                     <LogOut className="size-4" />
                   </span>
                   <span className="min-w-0 flex-1 truncate">
-                    {signOutMutation.isPending ? "Signing out..." : "Sign out"}
+                    {signOutMutation.isPending ? t("accountMenu.signingOut") : t("accountMenu.signOut")}
                   </span>
                 </button>
               ) : null}
@@ -281,13 +285,13 @@ export function SidebarAccountMenu({
                 href={FEEDBACK_URL}
                 target="_blank"
                 rel="noreferrer"
-                aria-label="Share feedback"
+                aria-label={t("accountMenu.shareFeedback")}
                 className="flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground/50 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <Flag className="h-4 w-4" aria-hidden="true" />
               </a>
             </TooltipTrigger>
-            <TooltipContent side="top">Share feedback</TooltipContent>
+            <TooltipContent side="top">{t("accountMenu.shareFeedback")}</TooltipContent>
           </Tooltip>
         ) : null}
       </div>
